@@ -1,12 +1,8 @@
 <template>
   <section class="profile">
-    <header class="header">
-      <a class="header_title">
-        <span class="header_title_text">我的</span>
-      </a>
-    </header>
+    <HeaderTop title="我的"></HeaderTop>
     <section class="profile-number">
-      <a href="javascript:" class="profile-link">
+      <router-link to="/login" class="profile-link">
         <div class="profile_image">
           <i class="iconfont icon-person"></i>
         </div>
@@ -22,7 +18,8 @@
         <span class="arrow">
           <i class="iconfont icon-jiantou1"></i>
         </span>
-      </a>
+      </router-link>
+      <a href="javascript:"></a>
     </section>
     <section class="profile_info_data border-1px">
       <ul class="info_data_list">
@@ -102,7 +99,13 @@
 </template>
 
 <script>
-export default {}
+// eslint-disable-next-line
+import HeaderTop from "../../components/HeaderTop/HeaderTop";
+export default {
+  components: {
+    HeaderTop
+  }
+}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
@@ -149,6 +152,7 @@ export default {}
       color: #fff
 .profile // 我的
   width: 100%
+  overflow: hidden
   .profile-number
     margin-top: 45.5px
     .profile-link
