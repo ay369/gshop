@@ -8,8 +8,17 @@
 
 <script>
 /* eslint-disable-next-line */
+import { mapActions } from "vuex";
+/* eslint-disable-next-line */
 import FooterGuide from "./components/FooterGuide/FooterGuide";
 export default {
+  created () {
+    this.getAddress()
+  },
+  mounted () {},
+  methods: {
+    ...mapActions(['getAddress'])
+  },
   components: {
     FooterGuide
   }

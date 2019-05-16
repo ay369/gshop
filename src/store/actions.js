@@ -12,13 +12,14 @@ export default {
     // 发送异步ajax请求
     const geohash = state.latitude + ',' + state.longitude
     const result = await reqAddress(geohash)
-    // 提交一个mutations
+    // 提交一个mutation
     if (result.code === 0) {
       const address = result.data
       commit(RECEIVE_ADDRESS, { address })
     }
   },
-  async getACategorys ({ commit }) {
+  // 异步获取食品商家地址
+  async getCategorys ({ commit }) {
     // 发送异步ajax请求
     const result = await reqFoodCategorys()
     // 提交一个mutations
@@ -27,6 +28,7 @@ export default {
       commit(RECEIVE_CATEGORYS, { categorys })
     }
   },
+  // 异步获取商家列表
   async getShops ({ commit, state }) {
     // 发送异步ajax请求
     const { longitude, latitude } = state
