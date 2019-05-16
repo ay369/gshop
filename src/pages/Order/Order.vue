@@ -1,10 +1,6 @@
 <template>
   <section class="order">
-    <header class="header">
-      <a class="header_title">
-        <span class="header_title_text">订单列表</span>
-      </a>
-    </header>
+    <HeaderTop title="订单列表"></HeaderTop>
     <section class="order_no_login">
       <img src="./images/person.png">
       <h3>登录后查看外卖订单</h3>
@@ -14,13 +10,20 @@
 </template>
 
 <script>
-export default {}
+// eslint-disable-next-line
+import HeaderTop from "../../components/HeaderTop/HeaderTop";
+export default {
+  components: {
+    HeaderTop
+  }
+}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
 @import '../../common/stylus/mixins.styl'
 .order // 订单
   width: 100%
+  overflow: hidden
   .header
     background-color: #02a774
     position: fixed
