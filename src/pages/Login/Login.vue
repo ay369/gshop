@@ -22,7 +22,7 @@
               >{{ computeTime>0 ? `已发送(${computeTime})s`: '获取验证码' }}</button>
             </section>
             <section class="login_verification">
-              <input type="tel" maxlength="8" placeholder="验证码">
+              <input type="tel" maxlength="8" placeholder="验证码" v-model="code">
             </section>
             <section class="login_hint">
               温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -48,7 +48,13 @@
               </section>
               <section class="login_message">
                 <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
-                <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                <img
+                  class="get_verification"
+                  src="http://localhost:4000/captcha/"
+                  alt="captcha"
+                  @click="getCaptcha"
+                  ref="captcha"
+                >
               </section>
             </section>
           </div>
@@ -65,7 +71,11 @@
 
 <script>
 // eslint-disable-next-line
+import { mapState } from "vuex";
+// eslint-disable-next-line
 import AlertTip from "../../components/AlertTip/AlertTip";
+// eslint-disable-next-line
+import { reqSendCode, reqSmsLogin, reqPwdLogin, reqUserInfo } from "../../api";
 export default {
   components: {
     AlertTip
@@ -91,19 +101,31 @@ export default {
   },
   methods: {
     // 异步获取发送短信部分
-    getCode() {
+    async getCode() {
       // 如果当前没有计时, 做一些事
       if (!this.computeTime) {
         // 启动倒计时
         this.computeTime = 30;
-        const intervaId = setInterval(() => {
+        this.intervaId = setInterval(() => {
           this.computeTime--;
           if (this.computeTime <= 0) {
-            clearInterval(intervaId);
+            clearInterval(this.intervaId);
           }
         }, 1000);
 
         // 发送ajax请求(向指定手机号发送验证请求)
+        const result = await reqSendCode(this.phone);
+        if (result.code === 1) {
+          // 失败了
+          // 显示提示
+          this.showAlert(result.msg);
+          // 停止计时
+          if (this.computeTime) {
+            this.computeTime = 0;
+            clearInterval(this.intervaId);
+            this.intervaId = undefined;
+          }
+        }
       }
     },
     // 方法提示信息
@@ -112,20 +134,26 @@ export default {
       this.alertShow = true;
     },
     // 异步登录
-    login() {
+    async login() {
+      let result;
       // 前台表验证
       if (this.loginWay) {
-        // eslint-disable-next-line
+        // 短信验证
         const { rightPhone, phone, code } = this;
         if (this.phone === "") {
           this.showAlert("不能为空");
+          return;
         } else if (!this.rightPhone) {
           // 手机号不正确
           this.showAlert("手机号不正确");
-        } else if (/^\d{6}$/.test(code)) {
+          return;
+        } else if (!/^\d{6}$/.test(code)) {
           // 验证码不正确
           this.showAlert("验证码不正确");
+          return;
         }
+        // 发送ajax请求短信登录
+        result = await reqSmsLogin(phone, code);
       } else {
         // 密码登陆
         // eslint-disable-next-line
@@ -133,19 +161,51 @@ export default {
         if (!this.name) {
           // 用户名不正确
           this.showAlert("用户名不正确");
+          return;
         } else if (!this.pwd) {
           // 密码不正确
           this.showAlert("密码不正确");
+          return;
         } else if (!this.captcha) {
           // 验证码必须指定
           this.showAlert("验证码必须指定");
+          return;
         }
+        // 发送ajax请求用户密码登录
+        result = await reqPwdLogin({ name, pwd, captcha });
+      }
+
+      // 停止计时
+      if (this.computeTime) {
+        this.computeTime = 0;
+        clearInterval(this.intervaId);
+      }
+      // 根据结果处理数据
+      console.log(result.code);
+
+      if (result.code === 0) {
+        // 成功
+        const user = result.data;
+        // 将user保存到vuex里面
+        this.$store.dispatch("recordUser", user);
+        // 跳到个人中心
+        this.$router.replace("/profile");
+      } else {
+        // 失败
+        const msg = result.msg;
+        this.getCaptcha();
+        this.showAlert(msg);
       }
     },
     closeTip() {
       // eslint-disable-next-line
       this.alertText = "";
       this.alertShow = false;
+    },
+    // 点击图形验证码
+    getCaptcha() {
+      this.$refs.captcha.src =
+        "http://localhost:4000/captcha?itme=" + Date.now();
     }
   }
 };

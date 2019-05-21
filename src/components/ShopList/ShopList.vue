@@ -1,7 +1,12 @@
 <template>
   <div class="shop_container">
     <ul class="shop_list" v-if="shops.length">
-      <li class="shop_li border-1px" v-for="(item, index) in shops" :key="index">
+      <li
+        class="shop_li border-1px"
+        v-for="(item, index) in shops"
+        @click="$router.push('/shop')"
+        :key="index"
+      >
         <a>
           <div class="shop_left">
             <img class="shop_img" :src="baseImagesUrl+item.image_path">
@@ -56,15 +61,15 @@ export default {
   components: {
     Star
   },
-  data () {
+  data() {
     return {
-      baseImagesUrl: 'http://cangdu.org:8001/img/'
-    }
+      baseImagesUrl: "http://cangdu.org:8001/img/"
+    };
   },
   computed: {
-    ...mapState(['shops'])
+    ...mapState(["shops"])
   }
-}
+};
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">

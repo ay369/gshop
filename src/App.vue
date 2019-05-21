@@ -12,17 +12,18 @@ import { mapActions } from "vuex";
 /* eslint-disable-next-line */
 import FooterGuide from "./components/FooterGuide/FooterGuide";
 export default {
-  created () {
-    this.getAddress()
+  created() {
+    this.getAddress();
+    this.getUserInfo();
   },
-  mounted () {},
+  mounted() {},
   methods: {
-    ...mapActions(['getAddress'])
+    ...mapActions(["getAddress", "getUserInfo"])
   },
   components: {
     FooterGuide
   }
-}
+};
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">

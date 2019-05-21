@@ -2,12 +2,15 @@
   <section class="msite">
     <!--首页头部-->
     <HeaderTop :title="address.name">
-      <span class="header_search" slot="left">
+      <router-link class="header_search" slot="left" to="/search">
         <i class="iconfont icon-sousuo"></i>
-      </span>
-      <span class="header_login" slot="right">
-        <span class="header_login_text">登录|注册</span>
-      </span>
+      </router-link>
+      <router-link class="header_login" slot="right" :to="userInfo._id ? '/userinfo' : '/login'">
+        <span class="header_login_text" v-if="!userInfo._id">登录|注册</span>
+        <span class="header_login_text" v-else>
+          <i class="iconfont icon-icon_geren"></i>
+        </span>
+      </router-link>
     </HeaderTop>
     <!--首页导航-->
     <nav class="msite_nav">
@@ -54,58 +57,58 @@ import HeaderTop from "../../components/HeaderTop/HeaderTop";
 import ShopList from "../../components/ShopList/ShopList";
 
 export default {
-  data () {
+  data() {
     return {
-      baseImages: 'https://fuss10.elemecdn.com/'
-    }
+      baseImages: "https://fuss10.elemecdn.com/"
+    };
   },
   components: {
     HeaderTop,
     ShopList
   },
   computed: {
-    ...mapState(['address', 'categorys']),
+    ...mapState(["address", "categorys", "userInfo"]),
 
     // 根据categorys一维数组生成2维数组, 最大数为8
-    categorysArr () {
-      const { categorys } = this
+    categorysArr() {
+      const { categorys } = this;
       // 准备两个数组
-      const arr = []
-      let minArr = []
+      const arr = [];
+      let minArr = [];
       // 遍历数组
       categorys.forEach(c => {
         // 如果小数组已满, 那么就新创建一个小数组
         if (minArr.length === 8) {
-          minArr = []
+          minArr = [];
         }
         // 如果大数组为空, 那么将小数组加到大数组中
         if (minArr.length === 0) {
-          arr.push(minArr)
+          arr.push(minArr);
         }
-        minArr.push(c)
-      })
-      return arr
+        minArr.push(c);
+      });
+      return arr;
     }
   },
   watch: {
-    categorys (value) {
+    categorys(value) {
       // 页面完成立即调用
       this.$nextTick(() => {
         // eslint-disable-next-line
         new Swiper(".swiper-container", {
           loop: true, // 循环模式选项
           pagination: {
-            el: '.swiper-pagination'
+            el: ".swiper-pagination"
           }
-        })
-      })
+        });
+      });
     }
   },
-  mounted () {
-    this.$store.dispatch('getCategorys')
-    this.$store.dispatch('getShops')
+  mounted() {
+    this.$store.dispatch("getCategorys");
+    this.$store.dispatch("getShops");
   }
-}
+};
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
