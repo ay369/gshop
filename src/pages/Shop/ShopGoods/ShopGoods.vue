@@ -26,6 +26,7 @@
                 class="food-item bottom-border-1px"
                 v-for="(food, index) in good.foods"
                 :key="index"
+                @click="showFood(food)"
               >
                 <div class="icon">
                   <img width="57" height="57" :src="food.image">
@@ -41,20 +42,27 @@
                     <span class="now">￥{{ food.price }}</span>
                     <span class="old" v-if="food.oldPrice">￥{{ food.oldPrice }}</span>
                   </div>
-                  <div class="cartcontrol-wrapper">CartControl</div>
+                  <div class="cartcontrol-wrapper">
+                    <CartControl :food="food"></CartControl>
+                  </div>
                 </div>
               </li>
             </ul>
           </li>
         </ul>
       </div>
+      <ShopCart></ShopCart>
     </div>
+    <Food :food="food" ref="food"></Food>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import BScroll from "better-scroll";
+import CartControl from "../../../components/CartControl/CartControl";
+import Food from "../../../components/Food/Food";
+import ShopCart from "../../../components/ShopCart/ShopCart";
 export default {
   data() {
     return {
@@ -62,6 +70,11 @@ export default {
       tops: [], // 所有右侧分类li的top组成的数组 (列表第一次显示后就不在变化)
       food: {} // 需要显示的food
     };
+  },
+  components: {
+    CartControl,
+    Food,
+    ShopCart
   },
   mounted() {
     this.$store.dispatch("getShopGoods", () => {
@@ -130,6 +143,12 @@ export default {
       this.scrollY = scrollY;
       // 平滑滚动右侧列表
       this.foodsScroll.scrollTo(0, -scrollY, 300);
+    },
+    showFood(food) {
+      // 设置food
+      this.food = food;
+      // 显示food组件 (调用组件对象的方法)
+      this.$refs.food.toggleShow();
     }
   }
 };
